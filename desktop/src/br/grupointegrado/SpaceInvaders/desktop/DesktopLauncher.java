@@ -7,6 +7,9 @@ import br.grupointegrado.SpaceInvaders.MainGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		//Define a resolução da tela
+		config.width = 480;
+		config.height = 640;
 		new LwjglApplication(new MainGame(), config);
 	}
 }
