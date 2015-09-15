@@ -2,6 +2,8 @@ package br.grupointegrado.SpaceInvaders;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -49,6 +51,11 @@ public class TelaJogo extends TelaBase {
     private Array<Texture> texturasExplosao = new Array<Texture>();
     private Array<Explosao> explosoes = new Array<Explosao>();
 
+    private Sound somTiro;
+    private Sound somExplosao;
+    private Sound somGameOver;
+    private Music musicaFundo;
+
     /**
      * Construtor padrão da tela de jogo
      * @param game Referência para a classe principal
@@ -68,10 +75,20 @@ public class TelaJogo extends TelaBase {
         palco = new Stage(new FillViewport(camera.viewportWidth, camera.viewportHeight, camera));
         palcoInformacoes = new Stage(new FillViewport(camera.viewportWidth, camera.viewportHeight, camera));
 
+        initSons();
         initTexturas();
         initFonte();
         initInformacoes();
         initJogador();
+    }
+
+    private void initSons() {
+
+        somTiro = Gdx.audio.newSound(Gdx.files.internal("sounds/shoot.mp3"));
+        somExplosao = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.mp3"));
+        somGameOver = Gdx.audio.newSound(Gdx.files.internal("sounds/gameover.mp3"));
+        musicaFundo = Gdx.audio.newMusic(Gdx.files.internal("sounds/background.mp3"));
+        musicaFundo.setLooping(true);
     }
 
     private void initTexturas() {
@@ -155,12 +172,19 @@ public class TelaJogo extends TelaBase {
         atualizarExplosoes(delta);
 
         if(gameOver == false){
+            if(!musicaFundo.isPlaying()){
+                musicaFundo.play();
+            }
             capturaTeclas();
             atualizarJogador(delta);
             atualizaTiro(delta);
             atualizarMeteoros(delta);
             detectarColisoes(meteoros1, 5);
             detectarColisoes(meteoros2, 15);
+        }else{
+            if(musicaFundo.isPlaying()){
+                musicaFundo.stop();
+            }
         }
 
         //Atualiza a situação do palco
@@ -205,13 +229,15 @@ public class TelaJogo extends TelaBase {
                 tiros.removeValue(tiro, true); // remove da lista
                 meteoro.remove(); // remove do palco
                 meteoros.removeValue(meteoro, true); // remove da lista
-                criarExplosao(meteoro.getX(), meteoro.getY());
+                criarExplosao(meteoro.getX() + meteoro.getWidth() / 2, meteoro.getY() + meteoro.getHeight() / 2);
             }
         }
         //Detecta colisão com o player
         if(recJogador.overlaps(recMeteoro)){
             //Ocorre colisão do jogador com meteoro 1
             gameOver = true;
+            gameOver = true;
+            somGameOver.play();
         }
 
         }
@@ -219,12 +245,13 @@ public class TelaJogo extends TelaBase {
 
     private void criarExplosao(float x, float y) {
         Image ator = new Image(texturasExplosao.get(0));
-        ator.setPosition(x, y);
+        ator.setPosition(x - ator.getImageWidth() / 2, y - ator.getHeight() / 2);
         palco.addActor(ator);
 
         Explosao explosao = new Explosao(ator, texturasExplosao);
         explosoes.add(explosao);
-    }
+        somExplosao.play();
+     }
 
     private void atualizarMeteoros(float delta) {
         int qtdMeteoros = meteoros1.size + meteoros2.size; // retorna a quantidade de meteoros criados
@@ -300,6 +327,7 @@ public class TelaJogo extends TelaBase {
                 tiros.add(tiro);
                 palco.addActor(tiro);
                 intervaloTiros = 0;
+                somTiro.play();
             }
         }
         float velocidade = 200; // velocidade de movimentação do tiro
@@ -421,5 +449,11 @@ public class TelaJogo extends TelaBase {
         for(Texture text : texturasExplosao){
             text.dispose();
         }
+        somTiro.dispose();
+        somExplosao.dispose();
+        musicaFundo.dispose();
+        somGameOver.dispose();
+        somTiro.dispose();
+        somExplosao.dispose();
     }
 }
