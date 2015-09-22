@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 
+import javax.swing.JOptionPane;
 
 
 /**
@@ -187,8 +188,9 @@ public class TelaJogo extends TelaBase {
         }else{
             if(musicaFundo.isPlaying()){
                 musicaFundo.stop();
-                reiniciarJogo();
+
             }
+            reiniciarJogo();
         }
 
         //Atualiza a situação do palco
@@ -204,11 +206,12 @@ public class TelaJogo extends TelaBase {
      * Verifica se o usuario pressionou a tecla enter para reiniciar o jogo
      */
     private void reiniciarJogo() {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isTouched()){
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)|| Gdx.input.isTouched()) {
             Preferences preferencias = Gdx.app.getPreferences("SpaceInvaders");
-            int pontuacaoMaxima = preferencias.getInteger("pontuacao_maxima",0);
+            int pontuacaoMaxima = preferencias.getInteger("pontuacao_maxima", 0);
             if(pontuacao > pontuacaoMaxima){
-                preferencias.putInteger("pontuacao_maxima",pontuacao);
+                preferencias.putInteger("pontuacao_maxima", pontuacao);
                 preferencias.flush();
             }
 
@@ -494,8 +497,9 @@ public class TelaJogo extends TelaBase {
 
         batch.dispose();
         palco.dispose();
-        palcoInformacoes.dispose();
         fonte.dispose();
+        palcoInformacoes.dispose();
+
         texturaJogador.dispose();
         texturaJogadorDireita.dispose();
         texturaJogadorEsquerda.dispose();
